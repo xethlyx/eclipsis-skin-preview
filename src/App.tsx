@@ -207,6 +207,7 @@ class App extends React.PureComponent {
 		this.currentGun = gunSelected;
 
 		this.loadWithTexture(this.currentSkin);
+		this.forceUpdate();
 	}
 
 	render() {

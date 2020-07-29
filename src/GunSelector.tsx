@@ -1,19 +1,18 @@
 import React from 'react';
 import './GunSelector.css';
+import gunMappings from './gunMappings';
 
 type GunSelectorProps = {
     selectGun: (gunSelected: string) => void
 }
 
 class GunSelector extends React.PureComponent<GunSelectorProps> {
-    guns = ['All','Assault'];
-
     render() {
         let gunList = [];
 
-        for (const gun of this.guns) {
+        for (const gun of Object.keys(gunMappings)) {
             gunList.push(<div className="gun-field" key={gun} onClick={() => this.props.selectGun(gun)}>
-                <p>{gun}</p>
+                <p>{gunMappings[gun]}</p>
             </div>)
         };
 
