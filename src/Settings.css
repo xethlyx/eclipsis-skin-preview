@@ -1,0 +1,142 @@
+.settings-container {
+    pointer-events: none;
+    
+	position: fixed;
+	left: 0;
+	top: 0;
+
+    z-index: 100;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.settings-container.hidden {
+    display: none;
+}
+
+.settings {
+    pointer-events: initial;
+
+    width: 90%;
+    max-width: 500px;
+    height: 70%;
+    
+    border-radius: 3px;
+
+    background-color: #2e2e2e;
+    overflow: hidden;
+
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 30px 1fr;
+
+    box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.4);
+}
+
+.settings-header {
+    position: relative;
+
+    background-color: #252525;
+    color: #d3d3d3;
+    font-size: 15px;
+}
+
+.settings-header .img-container {
+    display: inline-block;
+    height: 100%;
+    vertical-align: top;
+    margin-left: 10px;
+
+    position: relative;
+}
+
+.settings-header img {
+    position: absolute;
+	user-select: none;
+    left: 0;
+    top: 10%;
+
+    height: 80%;
+}
+
+.settings-header p {
+    display: inline-block;
+	user-select: none;
+    margin: 5px;
+    margin-left: 35px;
+}
+
+.settings-header .close-container {
+    position: absolute;
+    right: 0;
+    width: 30px;
+}
+
+.settings-header .close-container:hover {
+    opacity: 80%;
+    background-color: red;
+}
+
+.settings-header .close-container img {
+    top: 20%;
+    left: 20%;
+    height: 60%;
+}
+
+.settings-content {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+    margin-right: 8px;
+    margin-top: 10px;
+    gap: 5px;
+}
+
+.setting-field {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    color: #d3d3d3;
+    font-size: 14px;
+}
+
+.setting-field p {
+    margin: 0;
+}
+
+.setting-field input {
+    border: none;
+    color: #d3d3d3;
+    width: 50px;
+}
+
+.setting-field input:focus {
+    outline: none;
+}
+
+.setting-field .modify {
+    background-color: #252525;
+}
+
+.setting-field .modify.boolean {
+    width: 20px;
+
+    position: relative;
+}
+
+.setting-field .modify.boolean .small-box {
+    position: absolute;
+    left: 20%;
+    top: 20%;
+    width: 60%;
+    height: 60%;
+}
+
+.setting-field .modify.boolean.active .small-box {
+    background-color: #d3d3d3;
+}

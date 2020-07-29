@@ -10,9 +10,12 @@ import CodeIcon from './icons/Code.svg';
 import SwitchIcon from './icons/Switch.svg';
 import SettingsIcon from './icons/Settings.svg';
 
+import Settings from './Settings';
+
 class App extends React.PureComponent {
 	state = {
-		userUploaded: false
+		userUploaded: false,
+		settingsShown: false
 	};
 
 	private scene = new THREE.Scene();
@@ -37,10 +40,11 @@ class App extends React.PureComponent {
 
 		// add stuff to the renderer
 		const gridHelper = new THREE.GridHelper(100, 100, new THREE.Color(0xFFFFFF));
+		gridHelper.name = 'Grid';
         gridHelper.position.set(0, -0.75, 0);
 		this.scene.add(gridHelper);
 		
-		this.toDataUrl(`/GunTexture.png`)
+		this.toDataUrl(`GunTexture.png`)
 			.then(baseUrl => {
 				this.loadWithTexture(baseUrl);
 			});
@@ -97,7 +101,7 @@ class App extends React.PureComponent {
 	private loadWithTexture = async(textureBase: string) => {
 		const mesh = await new Promise<Object3D>((res) => {
 			this.loader.load(
-				`/${this.currentGun}.obj`,
+				`${this.currentGun}.obj`,
 				object => {
 					res(object);
 				}
@@ -160,6 +164,34 @@ class App extends React.PureComponent {
 		reader.readAsDataURL(event.target.files[0]);
 	}
 
+	private toggleSettings = () => {
+		this.setState({
+			settingsShown: !this.state.settingsShown
+		});
+	}
+
+	private settingChanged = (settingChanged: string, newValue: any) => {
+		console.log(`Settings ${settingChanged} was changed to ${newValue}`);
+
+		switch(settingChanged) {
+			case 'movementSmoothing':
+				this.controls.enableDamping = newValue;
+				break;
+			case 'panningLocked':
+				this.controls.enablePan = !newValue;
+				break;
+			case 'cameraZoomRate':
+				this.controls.zoomSpeed = newValue;
+				break;
+			case 'showGrid':
+				const grid = this.scene.getObjectByName('Grid');
+				if (grid) grid.visible = newValue;
+				break;
+			default:
+				console.warn(`Property ${settingChanged} was changed, but no handler was attached!`);
+		}
+	}
+
 	render() {
 		return <>
 			<input type="file" className="hidden" ref={this.uploadRef} onChange={this.fileUploaded}></input>
@@ -167,9 +199,10 @@ class App extends React.PureComponent {
 				<div className="sidebar">
 					<button title="Upload Skin" onClick={this.uploadPassthrough}><img alt="Upload Skin" draggable={false} src={UploadIcon}></img></button>
 					<button title="Change Gun"><img alt="Change Gun" draggable={false} src={SwitchIcon}></img></button>
-					<button title="Settings"><img alt="Settings" draggable={false} src={SettingsIcon}></img></button>
+					<button title="Settings" onClick={this.toggleSettings}><img alt="Settings" draggable={false} src={SettingsIcon}></img></button>
 					<button title="View Source" onClick={() => window.location.href = 'https://github.com/xethlyx/eclipsis-skin-preview'}><img alt="View Source" draggable={false} src={CodeIcon}></img></button>
 				</div>
+				<Settings closeSettings={this.toggleSettings} eventBind={this.settingChanged} hidden={!this.state.settingsShown} />
 				<div className="info-indicator">
 					<p>{this.state.userUploaded ? 'User Content' : 'System Default'}</p>
 					<p>{this.gunMappings[this.currentGun]}</p>

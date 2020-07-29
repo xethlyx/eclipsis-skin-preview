@@ -35,6 +35,10 @@ canvas {
 	background-color: #1d1d1d;
 }
 
+.sidebar button:active {
+	background-color: #292929;
+}
+
 .sidebar button img {
 	position: absolute;
 
