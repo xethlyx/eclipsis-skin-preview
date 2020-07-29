@@ -11,11 +11,14 @@ import SwitchIcon from './icons/Switch.svg';
 import SettingsIcon from './icons/Settings.svg';
 
 import Settings from './Settings';
+import GunSelector from './GunSelector';
+import gunMappings from './gunMappings';
 
 class App extends React.PureComponent {
 	state = {
 		userUploaded: false,
-		settingsShown: false
+		settingsShown: false,
+		gunSelectorShown: false
 	};
 
 	private scene = new THREE.Scene();
@@ -24,14 +27,11 @@ class App extends React.PureComponent {
 		antialias: true
 	});
 	private controls = new OrbitControls(this.camera, this.renderer.domElement);
-	private loader = new OBJLoader2();
 
 	private currentSkin = '';
 	private currentGun = 'Assault';
 
-	private gunMappings: {[gunId: string]: string} = {
-		Assault: 'Assault Rifle'
-	};
+	private lastGunId: null | number = null;
 
 	componentDidMount() {
 		if (!this.mountRef.current) throw new Error('Mount point not found');
@@ -46,7 +46,8 @@ class App extends React.PureComponent {
 		
 		this.toDataUrl(`GunTexture.png`)
 			.then(baseUrl => {
-				this.loadWithTexture(baseUrl);
+				this.currentSkin = baseUrl;
+				this.loadWithTexture(this.currentSkin);
 			});
 	}
 
@@ -99,8 +100,10 @@ class App extends React.PureComponent {
 	}
 
 	private loadWithTexture = async(textureBase: string) => {
+		const loader = new OBJLoader2();
+
 		const mesh = await new Promise<Object3D>((res) => {
-			this.loader.load(
+			loader.load(
 				`${this.currentGun}.obj`,
 				object => {
 					res(object);
@@ -124,17 +127,19 @@ class App extends React.PureComponent {
 			flatShading: true
 		});
 
-		mesh.name = 'Gun';
 		mesh.traverse(child => {
 			if (child instanceof THREE.Mesh) {
 				child.material = shader;
 			}
 		});
 
-		const oldGun = this.scene.getObjectByName('Gun');
-		if (oldGun) {
-			this.scene.remove(oldGun);
+		if (this.lastGunId) {
+			const lastGun = this.scene.getObjectById(this.lastGunId);
+
+			if (lastGun) this.scene.remove(lastGun);
 		}
+		this.lastGunId = mesh.id;
+		
 
 		this.scene.add(mesh);
 	}
@@ -170,6 +175,12 @@ class App extends React.PureComponent {
 		});
 	}
 
+	private toggleGunSelector = () => {
+		this.setState({
+			gunSelectorShown: !this.state.gunSelectorShown
+		});
+	}
+
 	private settingChanged = (settingChanged: string, newValue: any) => {
 		console.log(`Settings ${settingChanged} was changed to ${newValue}`);
 
@@ -192,20 +203,27 @@ class App extends React.PureComponent {
 		}
 	}
 
+	private selectGun = (gunSelected: string) => {
+		this.currentGun = gunSelected;
+
+		this.loadWithTexture(this.currentSkin);
+	}
+
 	render() {
 		return <>
 			<input type="file" className="hidden" ref={this.uploadRef} onChange={this.fileUploaded}></input>
 			<div className="app" ref={this.mountRef}>
 				<div className="sidebar">
 					<button title="Upload Skin" onClick={this.uploadPassthrough}><img alt="Upload Skin" draggable={false} src={UploadIcon}></img></button>
-					<button title="Change Gun"><img alt="Change Gun" draggable={false} src={SwitchIcon}></img></button>
+					<button title="Change Gun" onClick={this.toggleGunSelector}><img alt="Change Gun" draggable={false} src={SwitchIcon}></img></button>
 					<button title="Settings" onClick={this.toggleSettings}><img alt="Settings" draggable={false} src={SettingsIcon}></img></button>
 					<button title="View Source" onClick={() => window.location.href = 'https://github.com/xethlyx/eclipsis-skin-preview'}><img alt="View Source" draggable={false} src={CodeIcon}></img></button>
 				</div>
+				{!this.state.gunSelectorShown || <GunSelector selectGun={this.selectGun}/>}
 				<Settings closeSettings={this.toggleSettings} eventBind={this.settingChanged} hidden={!this.state.settingsShown} />
 				<div className="info-indicator">
 					<p>{this.state.userUploaded ? 'User Content' : 'System Default'}</p>
-					<p>{this.gunMappings[this.currentGun]}</p>
+					<p>{gunMappings[this.currentGun]}</p>
 				</div>
 			</div>
 		</>;

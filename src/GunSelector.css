@@ -1,0 +1,47 @@
+
+
+.gun-selector {
+    position: fixed;
+
+    width: calc(100% - 95px);
+    max-width: 200px;
+    max-height: calc(100% - 68px);
+
+    left: 75px;
+    top: 63px;
+
+    padding-right: 5px;
+
+    z-index: 100;
+    
+    border-radius: 3px;
+
+    overflow: auto;
+
+    display: grid;
+    grid-template-columns: 100%;
+    grid-auto-rows: 25px;
+    gap: 1px;
+}
+
+.gun-field {
+    user-select: none;
+    
+    color: #d3d3d3;
+    background-color: #2e2e2e;
+    font-size: 13px;
+}
+
+.gun-field:hover {
+    background-color: #1d1d1d;
+}
+
+.gun-field:active {
+    background-color: #292929;
+}
+
+.gun-field p {
+    margin: 0;
+    margin-left: 8px;
+    margin-top: 3px;
+}
