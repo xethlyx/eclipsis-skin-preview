@@ -13,8 +13,6 @@
     padding-right: 5px;
 
     z-index: 100;
-    
-    border-radius: 3px;
 
     overflow: auto;
 
@@ -22,6 +20,14 @@
     grid-template-columns: 100%;
     grid-auto-rows: 25px;
     gap: 1px;
+}
+
+.gun-field:first-child {
+    border-radius: 3px 3px 0 0;
+}
+
+.gun-field:last-child {
+    border-radius: 0 0 3px 3px;
 }
 
 .gun-field {
