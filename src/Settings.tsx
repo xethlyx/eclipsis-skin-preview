@@ -15,6 +15,8 @@ class Settings extends React.PureComponent<SettingsProps> {
         movementSmoothing: true,
         panningLocked: true,
         showGrid: true,
+        oneTabPolicy: false,
+        autoCloseGunSelector: false,
         cameraZoomRate: 1
     };
 

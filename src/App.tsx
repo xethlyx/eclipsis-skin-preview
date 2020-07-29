@@ -32,6 +32,8 @@ class App extends React.PureComponent {
 	private currentGun = 'Assault';
 
 	private lastGunId: null | number = null;
+	private oneTabPolicy = false;
+	private autoCloseGunSelector = false;
 
 	componentDidMount() {
 		if (!this.mountRef.current) throw new Error('Mount point not found');
@@ -171,12 +173,22 @@ class App extends React.PureComponent {
 
 	private toggleSettings = () => {
 		this.setState({
+			gunSelectorShown: this.oneTabPolicy ? false : this.state.gunSelectorShown,
 			settingsShown: !this.state.settingsShown
 		});
 	}
 
+	private attemptAutoCloseGunSelector = () => {
+		if (this.autoCloseGunSelector) {
+			this.setState({
+				gunSelectorShown: false
+			});
+		}
+	}
+
 	private toggleGunSelector = () => {
 		this.setState({
+			settingsShown: this.oneTabPolicy ? false : this.state.settingsShown,
 			gunSelectorShown: !this.state.gunSelectorShown
 		});
 	}
@@ -198,6 +210,12 @@ class App extends React.PureComponent {
 				const grid = this.scene.getObjectByName('Grid');
 				if (grid) grid.visible = newValue;
 				break;
+			case 'oneTabPolicy':
+				this.oneTabPolicy = newValue;
+				break;
+			case 'autoCloseGunSelector':
+				this.autoCloseGunSelector = newValue;
+				break;
 			default:
 				console.warn(`Property ${settingChanged} was changed, but no handler was attached!`);
 		}
@@ -206,6 +224,7 @@ class App extends React.PureComponent {
 	private selectGun = (gunSelected: string) => {
 		this.currentGun = gunSelected;
 
+		this.attemptAutoCloseGunSelector();
 		this.loadWithTexture(this.currentSkin);
 		this.forceUpdate();
 	}
