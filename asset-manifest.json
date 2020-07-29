@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/eclipsis-skin-preview/static/css/main.a7a1a68c.chunk.css",
-    "main.js": "/eclipsis-skin-preview/static/js/main.229a85c9.chunk.js",
-    "main.js.map": "/eclipsis-skin-preview/static/js/main.229a85c9.chunk.js.map",
+    "main.js": "/eclipsis-skin-preview/static/js/main.f35c0c02.chunk.js",
+    "main.js.map": "/eclipsis-skin-preview/static/js/main.f35c0c02.chunk.js.map",
     "runtime-main.js": "/eclipsis-skin-preview/static/js/runtime-main.dad029fb.js",
     "runtime-main.js.map": "/eclipsis-skin-preview/static/js/runtime-main.dad029fb.js.map",
     "static/js/2.0fb0e481.chunk.js": "/eclipsis-skin-preview/static/js/2.0fb0e481.chunk.js",
     "static/js/2.0fb0e481.chunk.js.map": "/eclipsis-skin-preview/static/js/2.0fb0e481.chunk.js.map",
     "index.html": "/eclipsis-skin-preview/index.html",
-    "precache-manifest.1eff0175781e3fbd08eac620ab757049.js": "/eclipsis-skin-preview/precache-manifest.1eff0175781e3fbd08eac620ab757049.js",
+    "precache-manifest.124c461a065a1a653b1273ff04238ed6.js": "/eclipsis-skin-preview/precache-manifest.124c461a065a1a653b1273ff04238ed6.js",
     "service-worker.js": "/eclipsis-skin-preview/service-worker.js",
     "static/css/main.a7a1a68c.chunk.css.map": "/eclipsis-skin-preview/static/css/main.a7a1a68c.chunk.css.map",
     "static/js/2.0fb0e481.chunk.js.LICENSE.txt": "/eclipsis-skin-preview/static/js/2.0fb0e481.chunk.js.LICENSE.txt",
@@ -22,6 +22,6 @@
     "static/js/runtime-main.dad029fb.js",
     "static/js/2.0fb0e481.chunk.js",
     "static/css/main.a7a1a68c.chunk.css",
-    "static/js/main.229a85c9.chunk.js"
+    "static/js/main.f35c0c02.chunk.js"
   ]
 }
