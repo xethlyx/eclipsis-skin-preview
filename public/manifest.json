@@ -4,7 +4,7 @@
   "icons": [
     {
       "src": "favicon.ico",
-      "sizes": "64x64",
+      "sizes": "32x32",
       "type": "image/x-icon"
     },
     {
@@ -14,6 +14,7 @@
     }
   ],
   "start_url": "/eclipsis-skin-preview/",
+  "scope": "/eclipsis-skin-preview/",
   "display": "standalone",
   "theme_color": "#2e2e2e",
   "background_color": "#3a3a3a"
