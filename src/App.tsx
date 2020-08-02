@@ -35,6 +35,8 @@ class App extends React.PureComponent {
 	private oneTabPolicy = false;
 	private autoCloseGunSelector = false;
 
+	public gunMeshCache: {[gunId: string]: Object3D} = {};
+
 	componentDidMount() {
 		if (!this.mountRef.current) throw new Error('Mount point not found');
 
@@ -74,13 +76,25 @@ class App extends React.PureComponent {
             this.renderer.setPixelRatio(window.devicePixelRatio);
             this.renderer.setSize(window.innerWidth, window.innerHeight);
 		});
+
+		// load guns into memory
+		Object.keys(gunMappings).forEach(async gunName => {
+			const loader = new OBJLoader2();
+
+			loader.load(
+				`${gunName}.obj`,
+				mesh => {
+					this.gunMeshCache[gunName] = mesh;
+				}
+			);
+		});
 		
 		const animate = () => {
             requestAnimationFrame(animate);
             this.renderer.render(this.scene, this.camera);
             this.controls.update();
         }
-        animate();
+		animate();
 	}
 
 	public toDataUrl(url: string) {
@@ -102,16 +116,12 @@ class App extends React.PureComponent {
 	}
 
 	private loadWithTexture = async(textureBase: string) => {
-		const loader = new OBJLoader2();
+		const mesh = this.gunMeshCache[this.currentGun];
 
-		const mesh = await new Promise<Object3D>((res) => {
-			loader.load(
-				`${this.currentGun}.obj`,
-				object => {
-					res(object);
-				}
-			);
-		});
+		if (!mesh) {
+			console.warn(`Gun ${this.currentGun} not found! Is it still loading?`);
+			return;
+		}
 
 		// making image load on update
 		const image = document.createElement('img');
