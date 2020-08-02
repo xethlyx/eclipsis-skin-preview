@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/eclipsis-skin-preview/static/css/main.427b558f.chunk.css",
-    "main.js": "/eclipsis-skin-preview/static/js/main.f0c4aada.chunk.js",
-    "main.js.map": "/eclipsis-skin-preview/static/js/main.f0c4aada.chunk.js.map",
+    "main.css": "/eclipsis-skin-preview/static/css/main.172017ac.chunk.css",
+    "main.js": "/eclipsis-skin-preview/static/js/main.7483e767.chunk.js",
+    "main.js.map": "/eclipsis-skin-preview/static/js/main.7483e767.chunk.js.map",
     "runtime-main.js": "/eclipsis-skin-preview/static/js/runtime-main.dad029fb.js",
     "runtime-main.js.map": "/eclipsis-skin-preview/static/js/runtime-main.dad029fb.js.map",
-    "static/js/2.0869185b.chunk.js": "/eclipsis-skin-preview/static/js/2.0869185b.chunk.js",
-    "static/js/2.0869185b.chunk.js.map": "/eclipsis-skin-preview/static/js/2.0869185b.chunk.js.map",
+    "static/js/2.ea01163f.chunk.js": "/eclipsis-skin-preview/static/js/2.ea01163f.chunk.js",
+    "static/js/2.ea01163f.chunk.js.map": "/eclipsis-skin-preview/static/js/2.ea01163f.chunk.js.map",
     "index.html": "/eclipsis-skin-preview/index.html",
-    "precache-manifest.a4d834ccc81ff143650eaa3f745550cd.js": "/eclipsis-skin-preview/precache-manifest.a4d834ccc81ff143650eaa3f745550cd.js",
+    "precache-manifest.426382600dcf8d5957e3553a98e52165.js": "/eclipsis-skin-preview/precache-manifest.426382600dcf8d5957e3553a98e52165.js",
     "service-worker.js": "/eclipsis-skin-preview/service-worker.js",
-    "static/css/main.427b558f.chunk.css.map": "/eclipsis-skin-preview/static/css/main.427b558f.chunk.css.map",
-    "static/js/2.0869185b.chunk.js.LICENSE.txt": "/eclipsis-skin-preview/static/js/2.0869185b.chunk.js.LICENSE.txt",
+    "static/css/main.172017ac.chunk.css.map": "/eclipsis-skin-preview/static/css/main.172017ac.chunk.css.map",
+    "static/js/2.ea01163f.chunk.js.LICENSE.txt": "/eclipsis-skin-preview/static/js/2.ea01163f.chunk.js.LICENSE.txt",
     "static/media/Close.svg": "/eclipsis-skin-preview/static/media/Close.35eee04d.svg",
     "static/media/Code.svg": "/eclipsis-skin-preview/static/media/Code.3354fae2.svg",
     "static/media/Settings.svg": "/eclipsis-skin-preview/static/media/Settings.982ae196.svg",
@@ -20,8 +20,8 @@
   },
   "entrypoints": [
     "static/js/runtime-main.dad029fb.js",
-    "static/js/2.0869185b.chunk.js",
-    "static/css/main.427b558f.chunk.css",
-    "static/js/main.f0c4aada.chunk.js"
+    "static/js/2.ea01163f.chunk.js",
+    "static/css/main.172017ac.chunk.css",
+    "static/js/main.7483e767.chunk.js"
   ]
 }
