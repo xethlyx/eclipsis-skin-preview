@@ -261,6 +261,9 @@ class App extends React.PureComponent {
 			case 'movementSmoothing':
 				this.controls.enableDamping = newValue;
 				break;
+			case 'movementSmoothingFactor':
+				this.controls.dampingFactor = newValue;
+				break;
 			case 'panningLocked':
 				this.controls.enablePan = !newValue;
 				break;
@@ -276,6 +279,9 @@ class App extends React.PureComponent {
 				break;
 			case 'autoCloseGunSelector':
 				this.autoCloseGunSelector = newValue;
+				break;
+			case 'backgroundColor':
+				this.scene.background = new THREE.Color(Number.parseInt(newValue, 16));
 				break;
 			default:
 				console.warn(`Property ${settingChanged} was changed, but no handler was attached!`);

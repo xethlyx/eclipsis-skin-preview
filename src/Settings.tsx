@@ -15,11 +15,13 @@ type SettingsProps = {
 class Settings extends React.PureComponent<SettingsProps> {
     public settings: {[settingName: string]: any} = {
         movementSmoothing: true,
+        movementSmoothingFactor: 0.05,
         panningLocked: true,
         showGrid: true,
         oneTabPolicy: false,
         autoCloseGunSelector: false,
         cameraZoomRate: 1,
+        backgroundColor: '3A3A3A'
     };
 
     public prettyPrintVariable(variableName: string) {
@@ -71,10 +73,10 @@ class Settings extends React.PureComponent<SettingsProps> {
                         </div>
                         break;
                     case 'number':
-                        modify = <input type="number" onChange={event => this.updateSetting(settingName, Number(event.target.value))} value={setting} className="modify" />
+                        modify = <input type="number" autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" onChange={event => this.updateSetting(settingName, Number(event.target.value))} value={setting} className="modify" />
                         break;
                     case 'string':
-                        modify = <input type="text" onChange={event => this.updateSetting(settingName, event.target.value)} value={setting} className="modify" />
+                        modify = <input type="text" autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" onChange={event => this.updateSetting(settingName, event.target.value)} value={setting} className="modify" />
                         break;
                     default:
                         console.warn(`Input type ${typeof setting} for field ${settingName} is not supported.`);
