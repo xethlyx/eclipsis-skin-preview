@@ -13,13 +13,57 @@ import SettingsIcon from './icons/Settings.svg';
 import Settings from './Settings';
 import GunSelector from './GunSelector';
 import gunMappings from './gunMappings';
+import ContextMenu, { ContextMenuEntry } from './ContextMenu';
+
+const githubLink = 'https://github.com/xethlyx/eclipsis-skin-preview';
 
 class App extends React.PureComponent {
 	state = {
 		userUploaded: false,
 		settingsShown: false,
-		gunSelectorShown: false
+		gunSelectorShown: false,
+
+		contextName: '',
+		contextMenu: [] as Array<ContextMenuEntry>
 	};
+
+	private buttonContextMap: {[button: string]: Array<ContextMenuEntry>} = {
+		upload: [
+			{
+				name: 'Reset Skin',
+				callback: () => this.loadDefaultSkin()
+			}
+		],
+		change: [
+			{
+				name: 'Refresh Gun Objects',
+				callback: () => this.cacheGuns()
+			}
+		],
+		settings: [
+			{
+				name: 'Reset Settings',
+				callback: () => {
+					localStorage.removeItem('settings');
+					window.location.reload(false);
+				}
+			}
+		],
+		source: [
+			{
+				name: 'Open link in current tab',
+				callback: () => window.location.href = githubLink
+			},
+			{
+				name: 'Open link in new tab',
+				callback: () => window.open(githubLink, '_BLANK')
+			},
+			{
+				name: 'Copy link to clipboard',
+				callback: () => navigator.clipboard.writeText(githubLink)
+			}
+		]
+	}
 
 	private scene = new THREE.Scene();
 	private camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -48,6 +92,10 @@ class App extends React.PureComponent {
         gridHelper.position.set(0, -0.75, 0);
 		this.scene.add(gridHelper);
 		
+		this.loadDefaultSkin();
+	}
+
+	private loadDefaultSkin = () => {
 		this.toDataUrl(`GunTexture.png`)
 			.then(baseUrl => {
 				this.currentSkin = baseUrl;
@@ -77,7 +125,17 @@ class App extends React.PureComponent {
             this.renderer.setSize(window.innerWidth, window.innerHeight);
 		});
 
-		// load guns into memory
+		this.cacheGuns();
+		
+		const animate = () => {
+            requestAnimationFrame(animate);
+            this.renderer.render(this.scene, this.camera);
+            this.controls.update();
+        }
+		animate();
+	}
+
+	private cacheGuns = () => {
 		Object.keys(gunMappings).forEach(async gunName => {
 			const loader = new OBJLoader2();
 
@@ -88,13 +146,6 @@ class App extends React.PureComponent {
 				}
 			);
 		});
-		
-		const animate = () => {
-            requestAnimationFrame(animate);
-            this.renderer.render(this.scene, this.camera);
-            this.controls.update();
-        }
-		animate();
 	}
 
 	public toDataUrl(url: string) {
@@ -239,15 +290,29 @@ class App extends React.PureComponent {
 		this.forceUpdate();
 	}
 
+	private resetContext = () => {
+		this.setState({
+			contextMenu: []
+		})
+	}
+
+	private setContext = (caller: string) => {
+		this.setState({
+			contextName: caller.toUpperCase(),
+			contextMenu: this.buttonContextMap[caller]
+		});
+	}
+
 	render() {
 		return <>
+			<ContextMenu reference={this.state.contextName} entries={this.state.contextMenu} />
 			<input type="file" className="hidden" ref={this.uploadRef} onChange={this.fileUploaded}></input>
 			<div className="app" ref={this.mountRef}>
 				<div className="sidebar">
-					<button title="Upload Skin" onClick={this.uploadPassthrough}><img alt="Upload Skin" draggable={false} src={UploadIcon}></img></button>
-					<button title="Change Gun" onClick={this.toggleGunSelector}><img alt="Change Gun" draggable={false} src={SwitchIcon}></img></button>
-					<button title="Settings" onClick={this.toggleSettings}><img alt="Settings" draggable={false} src={SettingsIcon}></img></button>
-					<button title="View Source" onClick={() => window.location.href = 'https://github.com/xethlyx/eclipsis-skin-preview'}><img alt="View Source" draggable={false} src={CodeIcon}></img></button>
+					<button title="Upload Skin" onMouseLeave={this.resetContext} onMouseEnter={() => this.setContext('upload')} onClick={this.uploadPassthrough}><img alt="Upload Skin" draggable={false} src={UploadIcon}></img></button>
+					<button title="Change Gun" onMouseLeave={this.resetContext} onMouseEnter={() => this.setContext('change')} onClick={this.toggleGunSelector}><img alt="Change Gun" draggable={false} src={SwitchIcon}></img></button>
+					<button title="Settings" onMouseLeave={this.resetContext} onMouseEnter={() => this.setContext('settings')} onClick={this.toggleSettings}><img alt="Settings" draggable={false} src={SettingsIcon}></img></button>
+					<button title="View Source" onMouseLeave={this.resetContext} onMouseEnter={() => this.setContext('source')} onClick={() => window.location.href = githubLink}><img alt="View Source" draggable={false} src={CodeIcon}></img></button>
 				</div>
 				{!this.state.gunSelectorShown || <GunSelector selectGun={this.selectGun}/>}
 				<Settings closeSettings={this.toggleSettings} eventBind={this.settingChanged} hidden={!this.state.settingsShown} />

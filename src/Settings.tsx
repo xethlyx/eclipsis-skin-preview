@@ -35,6 +35,7 @@ class Settings extends React.PureComponent<SettingsProps> {
         
         // apply previous settings
         for (const settingName in this.settings) {
+            if (settingName.charAt(0) === '_') return;
             this.props.eventBind(settingName, this.settings[settingName]);
         }
 
@@ -43,6 +44,9 @@ class Settings extends React.PureComponent<SettingsProps> {
     }
 
     public updateSetting = (settingName: string, newValue: any) => {
+        // readonly properties can't change!
+        if (settingName.charAt(0) === '_') return;
+
         this.settings[settingName] = newValue;
 
         this.forceUpdate();

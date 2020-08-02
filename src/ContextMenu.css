@@ -1,0 +1,42 @@
+.context-menu {
+    user-select: none;
+
+    background-color: #2e2e2e;
+    color: #d3d3d3;
+    border-radius: 3px;
+
+    box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.4);
+    padding: 5px 0;
+    overflow: hidden;
+
+    position: fixed;
+    width: 200px;
+    z-index: 200;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: 25px;
+
+    cursor: default;
+}
+
+.context-menu p.header {
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.context-menu p {
+    line-height: 25px;
+
+    margin: 0;
+    font-size: 14px;
+    padding: 0 8px;
+}
+
+.context-menu p.entry:hover {
+    background-color: #1d1d1d;
+}
+
+.context-menu.hidden {
+    display: none;
+}
