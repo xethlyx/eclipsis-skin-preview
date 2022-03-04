@@ -1,27 +1,18 @@
 {
   "files": {
-    "main.css": "/eclipsis-skin-preview/static/css/main.15827799.chunk.css",
-    "main.js": "/eclipsis-skin-preview/static/js/main.ba921339.chunk.js",
-    "main.js.map": "/eclipsis-skin-preview/static/js/main.ba921339.chunk.js.map",
-    "runtime-main.js": "/eclipsis-skin-preview/static/js/runtime-main.dad029fb.js",
-    "runtime-main.js.map": "/eclipsis-skin-preview/static/js/runtime-main.dad029fb.js.map",
-    "static/js/2.ea01163f.chunk.js": "/eclipsis-skin-preview/static/js/2.ea01163f.chunk.js",
-    "static/js/2.ea01163f.chunk.js.map": "/eclipsis-skin-preview/static/js/2.ea01163f.chunk.js.map",
+    "main.css": "/eclipsis-skin-preview/static/css/main.60b34e25.css",
+    "main.js": "/eclipsis-skin-preview/static/js/main.486a10a2.js",
+    "static/media/Settings.svg": "/eclipsis-skin-preview/static/media/Settings.c4026598e33fad4cf93e86044bbc01dc.svg",
     "index.html": "/eclipsis-skin-preview/index.html",
-    "precache-manifest.ae8f8c89116c02f2e5029ab42d7088df.js": "/eclipsis-skin-preview/precache-manifest.ae8f8c89116c02f2e5029ab42d7088df.js",
-    "service-worker.js": "/eclipsis-skin-preview/service-worker.js",
-    "static/css/main.15827799.chunk.css.map": "/eclipsis-skin-preview/static/css/main.15827799.chunk.css.map",
-    "static/js/2.ea01163f.chunk.js.LICENSE.txt": "/eclipsis-skin-preview/static/js/2.ea01163f.chunk.js.LICENSE.txt",
-    "static/media/Close.svg": "/eclipsis-skin-preview/static/media/Close.35eee04d.svg",
-    "static/media/Code.svg": "/eclipsis-skin-preview/static/media/Code.3354fae2.svg",
-    "static/media/Settings.svg": "/eclipsis-skin-preview/static/media/Settings.982ae196.svg",
-    "static/media/Switch.svg": "/eclipsis-skin-preview/static/media/Switch.519a6516.svg",
-    "static/media/Upload.svg": "/eclipsis-skin-preview/static/media/Upload.90ba7a4b.svg"
+    "static/media/Upload.svg": "/eclipsis-skin-preview/static/media/Upload.64303a36f811a17673d08b7876bfdaa7.svg",
+    "static/media/Code.svg": "/eclipsis-skin-preview/static/media/Code.540f41ad31d376ce7f9ebb0a6a7fc7b9.svg",
+    "static/media/Switch.svg": "/eclipsis-skin-preview/static/media/Switch.b895791d3203cc38155f69e610579418.svg",
+    "static/media/Close.svg": "/eclipsis-skin-preview/static/media/Close.711795d8a1292bf69b65b805e2ef8476.svg",
+    "main.60b34e25.css.map": "/eclipsis-skin-preview/static/css/main.60b34e25.css.map",
+    "main.486a10a2.js.map": "/eclipsis-skin-preview/static/js/main.486a10a2.js.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.dad029fb.js",
-    "static/js/2.ea01163f.chunk.js",
-    "static/css/main.15827799.chunk.css",
-    "static/js/main.ba921339.chunk.js"
+    "static/css/main.60b34e25.css",
+    "static/js/main.486a10a2.js"
   ]
 }
