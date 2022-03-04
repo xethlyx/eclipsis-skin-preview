@@ -1,10 +1,8 @@
-import React from 'react';
-import './Settings.css';
-
-import SettingsIcon from './icons/Settings.svg';
-import CloseIcon from './icons/Close.svg';
-
 import preval from 'preval.macro';
+import React from 'react';
+import CloseIcon from './icons/Close.svg';
+import SettingsIcon from './icons/Settings.svg';
+import './Settings.css';
 
 type SettingsProps = {
     eventBind: (changed: string, newValue: any) => void,
@@ -26,15 +24,15 @@ class Settings extends React.PureComponent<SettingsProps> {
 
     public prettyPrintVariable(variableName: string) {
         const separatedVariable = variableName.replace(/([A-Z])/g, ' $1').replace(/_/g, '').trim();
-        
+
         return separatedVariable.charAt(0).toUpperCase() + separatedVariable.slice(1);
     }
-    
+
     constructor(props: any) {
         super(props);
 
         Object.assign(this.settings, JSON.parse(localStorage.getItem('settings') || "{}"));
-        
+
         // apply previous settings
         for (const settingName in this.settings) {
             if (settingName.charAt(0) === '_') return;

@@ -85,7 +85,12 @@ class App extends React.PureComponent {
 		this.mountRef.current.appendChild(this.renderer.domElement);
 
 		// add stuff to the renderer
-		const gridHelper = new THREE.GridHelper(100, 100, new THREE.Color(0xFFFFFF));
+		const gridHelper = new THREE.GridHelper(
+			100,
+			100,
+			new THREE.Color(0x7a7a7a),
+			new THREE.Color(0x525252)
+		);
 		gridHelper.name = 'Grid';
         gridHelper.position.set(0, -0.75, 0);
 		this.scene.add(gridHelper);
@@ -102,7 +107,7 @@ class App extends React.PureComponent {
 	constructor(props: any) {
 		super(props);
 
-        this.scene.background = new THREE.Color(0x3a3a3a);
+        this.scene.background = new THREE.Color(0x3A3A3A);
 		this.camera.position.set(3, 2, 2);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
