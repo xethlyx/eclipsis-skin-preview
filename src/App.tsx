@@ -1,19 +1,17 @@
 import React from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2';
-import './App.css';
 import { Object3D } from 'three';
-
-import UploadIcon from './icons/Upload.svg';
-import CodeIcon from './icons/Code.svg';
-import SwitchIcon from './icons/Switch.svg';
-import SettingsIcon from './icons/Settings.svg';
-
-import Settings from './Settings';
-import GunSelector from './GunSelector';
-import gunMappings from './gunMappings';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import './App.css';
 import ContextMenu, { ContextMenuEntry } from './ContextMenu';
+import gunMappings from './gunMappings';
+import GunSelector from './GunSelector';
+import CodeIcon from './icons/Code.svg';
+import SettingsIcon from './icons/Settings.svg';
+import SwitchIcon from './icons/Switch.svg';
+import UploadIcon from './icons/Upload.svg';
+import Settings from './Settings';
 
 const githubLink = 'https://github.com/xethlyx/eclipsis-skin-preview';
 
@@ -45,7 +43,7 @@ class App extends React.PureComponent {
 				name: 'Reset Settings',
 				callback: () => {
 					localStorage.removeItem('settings');
-					window.location.reload(false);
+					window.location.reload();
 				}
 			}
 		],
@@ -91,16 +89,14 @@ class App extends React.PureComponent {
 		gridHelper.name = 'Grid';
         gridHelper.position.set(0, -0.75, 0);
 		this.scene.add(gridHelper);
-		
+
 		this.loadDefaultSkin();
 	}
 
-	private loadDefaultSkin = () => {
-		this.toDataUrl(`GunTexture.png`)
-			.then(baseUrl => {
-				this.currentSkin = baseUrl;
-				this.loadWithTexture(this.currentSkin);
-			});
+	private loadDefaultSkin = async() => {
+		const baseUrl = await this.toDataUrl(`texture.png`);
+		this.currentSkin = baseUrl;
+		this.loadWithTexture(this.currentSkin);
 	}
 
 	constructor(props: any) {
@@ -120,13 +116,13 @@ class App extends React.PureComponent {
         window.addEventListener('resize', event => {
             this.camera.aspect = window.innerWidth / window.innerHeight;
 			this.camera.updateProjectionMatrix();
-			
+
             this.renderer.setPixelRatio(window.devicePixelRatio);
             this.renderer.setSize(window.innerWidth, window.innerHeight);
 		});
 
 		this.cacheGuns();
-		
+
 		const animate = () => {
             requestAnimationFrame(animate);
             this.renderer.render(this.scene, this.camera);
@@ -137,10 +133,10 @@ class App extends React.PureComponent {
 
 	private cacheGuns = () => {
 		Object.keys(gunMappings).forEach(async gunName => {
-			const loader = new OBJLoader2();
+			const loader = new OBJLoader();
 
 			loader.load(
-				`${gunName}.obj`,
+				`./weapons/${gunName}.obj`,
 				mesh => {
 					this.gunMeshCache[gunName] = mesh;
 				}
@@ -148,21 +144,22 @@ class App extends React.PureComponent {
 		});
 	}
 
-	public toDataUrl(url: string) {
+	public async toDataUrl(url: string) {
+		console.log(url);
+
+		const request = await fetch(url);
+		if (request.status !== 200) {
+			throw new Error('Could not retrieve data: non 200 status code');
+		}
+
+		const blob = await request.blob();
+
 		return new Promise<string>(res => {
-			const xhr = new XMLHttpRequest();
-
-			xhr.addEventListener('load', event => {
-				var reader = new FileReader();
-				reader.onloadend = function() {
-					res(reader.result?.toString());
-				}
-				reader.readAsDataURL(xhr.response);
-			});
-
-			xhr.open('GET', url);
-			xhr.responseType = 'blob';
-			xhr.send();
+			const reader = new FileReader();
+			reader.readAsDataURL(blob);
+			reader.addEventListener('loadend', () => {
+				res(reader.result as string);
+			})
 		});
 	}
 
@@ -187,7 +184,7 @@ class App extends React.PureComponent {
 		const shader = new THREE.MeshBasicMaterial({
 			color: 0xffffff,
 			map: texture,
-			flatShading: true
+			// flatShading: true
 		});
 
 		mesh.traverse(child => {
@@ -202,7 +199,7 @@ class App extends React.PureComponent {
 			if (lastGun) this.scene.remove(lastGun);
 		}
 		this.lastGunId = mesh.id;
-		
+
 
 		this.scene.add(mesh);
 	}
