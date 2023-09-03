@@ -41,9 +41,14 @@ class App extends React.PureComponent {
 
 		color: 'rgb(196, 40, 28)',
 		neon: false,
+		fps: 0,
 	};
 
 	postProcessing = true;
+	mounted = false;
+
+	frameTimeTotal = 0;
+	frameTotal = 0;
 
 	private buttonContextMap: { [button: string]: Array<ContextMenuEntry> } = {
 		upload: [
@@ -104,6 +109,7 @@ class App extends React.PureComponent {
 		if (!this.mountRef.current) throw new Error('Mount point not found');
 
 		this.mountRef.current.appendChild(this.renderer.domElement);
+		this.mounted = true;
 
 		// add stuff to the renderer
 		const gridHelper = new THREE.GridHelper(
@@ -134,6 +140,10 @@ class App extends React.PureComponent {
 		if (prevState.neon !== this.state.neon || prevState.color !== this.state.color) {
 			this.loadWithTexture(this.currentSkin);
 		}
+	}
+
+	componentWillUnmount(): void {
+		this.mounted = false;
 	}
 
 	private loadDefaultSkin = async () => {
@@ -180,11 +190,23 @@ class App extends React.PureComponent {
 
 		this.cacheGuns();
 
-		const animate = (deltaTime: number) => {
+		let lastTime = 0;
+		const animate = (now: number) => {
+			const deltaTime = now - lastTime;
+			lastTime = now;
+
+			this.frameTimeTotal += deltaTime / 1000;
+			this.frameTotal += 1;
+			if (this.frameTimeTotal >= 1) {
+				this.frameTimeTotal -= 1;
+				if (this.mounted) this.setState({ fps: this.frameTotal });
+				this.frameTotal = 0;
+			}
+
+			requestAnimationFrame(animate);
 			this.controls.update();
 			if (this.postProcessing) this.composer.render(deltaTime);
 			else this.renderer.render(this.scene, this.camera);
-			requestAnimationFrame(animate);
 		}
 		animate(0);
 	}
@@ -425,7 +447,7 @@ class App extends React.PureComponent {
 					this.setState({ neon });
 				}} />
 				<div className="info-indicator">
-					<p>{this.state.userUploaded ? 'User Content' : 'System Default'}</p>
+					<p>{this.state.userUploaded ? 'User Content' : 'System Default'} - {this.state.fps} FPS</p>
 					<p>{gunMappings[this.currentGun]}</p>
 				</div>
 			</div>
