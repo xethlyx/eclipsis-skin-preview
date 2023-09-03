@@ -1,8 +1,8 @@
 import preval from 'preval.macro';
 import React from 'react';
+import './Settings.css';
 import CloseIcon from './icons/Close.svg';
 import SettingsIcon from './icons/Settings.svg';
-import './Settings.css';
 
 type SettingsProps = {
     eventBind: (changed: string, newValue: any) => void,
@@ -19,7 +19,8 @@ class Settings extends React.PureComponent<SettingsProps> {
         oneTabPolicy: false,
         autoCloseGunSelector: false,
         cameraZoomRate: 1,
-        backgroundColor: '3A3A3A'
+        backgroundColor: '3A3A3A',
+        postProcessing: true,
     };
 
     public prettyPrintVariable(variableName: string) {

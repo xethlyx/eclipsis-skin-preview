@@ -67,7 +67,7 @@ class ContextMenu extends React.PureComponent<ContextMenuProps> {
     componentWillUnmount() {
         document.removeEventListener('contextmenu', this.rightClick);
     }
-    
+
     render = () => {
         const entries = this.cachedEntries.map(entry => {
             return <p className="entry" key={entry.name} onClick={entry.callback}>

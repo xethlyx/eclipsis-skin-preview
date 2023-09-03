@@ -3,8 +3,14 @@ import * as THREE from 'three';
 import { Object3D } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 import './App.css';
 import ContextMenu, { ContextMenuEntry } from './ContextMenu';
+import GunColors from './GunColors';
 import GunSelector from './GunSelector';
 import Settings from './Settings';
 import gunMappings from './gunMappings';
@@ -15,6 +21,15 @@ import UploadIcon from './icons/Upload.svg';
 
 const githubLink = 'https://github.com/xethlyx/eclipsis-skin-preview';
 
+function loadImage(src: string): Promise<HTMLImageElement> {
+	return new Promise((resolve, reject) => {
+		const img = new Image();
+		img.onload = () => resolve(img);
+		img.onerror = reject;
+		img.src = src;
+	});
+}
+
 class App extends React.PureComponent {
 	state = {
 		userUploaded: false,
@@ -22,8 +37,13 @@ class App extends React.PureComponent {
 		gunSelectorShown: false,
 
 		contextName: '',
-		contextMenu: [] as Array<ContextMenuEntry>
+		contextMenu: [] as Array<ContextMenuEntry>,
+
+		color: 'rgb(196, 40, 28)',
+		neon: false,
 	};
+
+	postProcessing = true;
 
 	private buttonContextMap: { [button: string]: Array<ContextMenuEntry> } = {
 		upload: [
@@ -66,9 +86,10 @@ class App extends React.PureComponent {
 	private scene = new THREE.Scene();
 	private camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 	private renderer = new THREE.WebGLRenderer({
-		antialias: true
+		antialias: true,
 	});
 	private controls = new OrbitControls(this.camera, this.renderer.domElement);
+	private composer = new EffectComposer(this.renderer);
 
 	private currentSkin = '';
 	private currentGun = 'Assault';
@@ -103,10 +124,16 @@ class App extends React.PureComponent {
 		this.scene.add(hemisphereLight)
 
 		const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-		dirLight.position.set(-1, 0.75, 1);
+		dirLight.position.set(0, 1, 0);
 		this.scene.add(dirLight)
 
 		this.loadDefaultSkin();
+	}
+
+	componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{ neon: boolean, color: string }>, snapshot?: any): void {
+		if (prevState.neon !== this.state.neon || prevState.color !== this.state.color) {
+			this.loadWithTexture(this.currentSkin);
+		}
 	}
 
 	private loadDefaultSkin = async () => {
@@ -122,6 +149,19 @@ class App extends React.PureComponent {
 		this.camera.position.set(3, 2, 2);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
+		this.composer.setSize(window.innerWidth, window.innerHeight);
+
+		const renderScene = new RenderPass(this.scene, this.camera);
+		const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.15, 0.1, 0.5);
+		const smaaPass = new SMAAPass(window.innerWidth, window.innerHeight);
+		const outputPass = new OutputPass();
+
+		outputPass.renderToScreen = false;
+
+		this.composer.addPass(renderScene);
+		this.composer.addPass(bloomPass);
+		this.composer.addPass(outputPass);
+		this.composer.addPass(smaaPass);
 
 		this.controls.enableDamping = true;
 		this.controls.zoomSpeed = 1;
@@ -135,16 +175,18 @@ class App extends React.PureComponent {
 
 			this.renderer.setPixelRatio(window.devicePixelRatio);
 			this.renderer.setSize(window.innerWidth, window.innerHeight);
+			this.composer.setSize(window.innerWidth, window.innerHeight);
 		});
 
 		this.cacheGuns();
 
-		const animate = () => {
-			requestAnimationFrame(animate);
-			this.renderer.render(this.scene, this.camera);
+		const animate = (deltaTime: number) => {
 			this.controls.update();
+			if (this.postProcessing) this.composer.render(deltaTime);
+			else this.renderer.render(this.scene, this.camera);
+			requestAnimationFrame(animate);
 		}
-		animate();
+		animate(0);
 	}
 
 	private cacheGuns = () => {
@@ -161,8 +203,6 @@ class App extends React.PureComponent {
 	}
 
 	public async toDataUrl(url: string) {
-		console.log(url);
-
 		const request = await fetch(url);
 		if (request.status !== 200) {
 			throw new Error('Could not retrieve data: non 200 status code');
@@ -188,19 +228,59 @@ class App extends React.PureComponent {
 		}
 
 		// making image load on update
-		const image = document.createElement('img');
-		image.src = textureBase;
+		const image = await loadImage(textureBase);
 
-		const texture = new THREE.Texture(image);
-		texture.colorSpace = THREE.SRGBColorSpace;
+		const diffuseCanvas = document.createElement('canvas');
+		diffuseCanvas.width = image.width;
+		diffuseCanvas.height = image.height;
 
-		image.addEventListener('load', event => {
-			texture.needsUpdate = true;
-		});
+		const diffuseContext = diffuseCanvas.getContext('2d')!;
+		diffuseContext.save();
+		diffuseContext.fillStyle = this.state.color;
+		diffuseContext.fillRect(0, 0, diffuseCanvas.width, diffuseCanvas.height);
+		diffuseContext.restore();
+		diffuseContext.drawImage(image, 0, 0);
 
-		const shader = new THREE.MeshPhysicalMaterial({
+		const diffuseImage = await loadImage(diffuseCanvas.toDataURL());
+		diffuseCanvas.remove();
+
+		const diffuse = new THREE.Texture(diffuseImage);
+		diffuse.colorSpace = THREE.SRGBColorSpace;
+
+		const emissiveCanvas = document.createElement('canvas');
+		emissiveCanvas.width = image.width;
+		emissiveCanvas.height = image.height;
+
+		const emissiveContext = emissiveCanvas.getContext('2d')!;
+		emissiveContext.save();
+		emissiveContext.fillStyle = '#ffffff';
+		emissiveContext.fillRect(0, 0, emissiveCanvas.width, emissiveCanvas.height);
+		emissiveContext.restore();
+		emissiveContext.save();
+		emissiveContext.globalCompositeOperation = 'destination-out';
+		emissiveContext.drawImage(image, 0, 0);
+		emissiveContext.restore();
+		emissiveContext.save();
+		emissiveContext.globalCompositeOperation = 'destination-over';
+		emissiveContext.fillStyle = '#000000';
+		emissiveContext.fillRect(0, 0, emissiveCanvas.width, emissiveCanvas.height);
+		emissiveContext.restore();
+
+		const emissiveImage = await loadImage(emissiveCanvas.toDataURL());
+		emissiveCanvas.remove();
+
+		const emissive = new THREE.Texture(emissiveImage);
+		emissive.colorSpace = THREE.SRGBColorSpace;
+
+		diffuse.needsUpdate = true;
+		emissive.needsUpdate = true;
+
+		const shader = new THREE.MeshStandardMaterial({
 			color: 0xffffff,
-			map: texture
+			map: diffuse,
+			emissiveMap: emissive,
+			emissive: this.state.neon ? new THREE.Color(this.state.color) : new THREE.Color('#000000'),
+			emissiveIntensity: this.state.neon ? 10 : 0,
 		});
 
 		mesh.traverse(child => {
@@ -215,7 +295,6 @@ class App extends React.PureComponent {
 			if (lastGun) this.scene.remove(lastGun);
 		}
 		this.lastGunId = mesh.id;
-
 
 		this.scene.add(mesh);
 	}
@@ -286,7 +365,6 @@ class App extends React.PureComponent {
 			case 'showGrid':
 				const grid = this.scene.getObjectByName('Grid');
 				if (grid) {
-					console.log(newValue)
 					grid.visible = newValue
 				};
 				break;
@@ -298,6 +376,9 @@ class App extends React.PureComponent {
 				break;
 			case 'backgroundColor':
 				this.scene.background = new THREE.Color(Number.parseInt(newValue, 16));
+				break;
+			case 'postProcessing':
+				this.postProcessing = newValue;
 				break;
 			default:
 				console.warn(`Property ${settingChanged} was changed, but no handler was attached!`);
@@ -338,6 +419,11 @@ class App extends React.PureComponent {
 				</div>
 				{!this.state.gunSelectorShown || <GunSelector selectGun={this.selectGun} />}
 				<Settings closeSettings={this.toggleSettings} eventBind={this.settingChanged} hidden={!this.state.settingsShown} />
+				<GunColors color={this.state.color} setColor={color => {
+					this.setState({ color });
+				}} neon={this.state.neon} setNeon={neon => {
+					this.setState({ neon });
+				}} />
 				<div className="info-indicator">
 					<p>{this.state.userUploaded ? 'User Content' : 'System Default'}</p>
 					<p>{gunMappings[this.currentGun]}</p>
