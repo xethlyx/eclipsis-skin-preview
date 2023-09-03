@@ -5,13 +5,13 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import './App.css';
 import ContextMenu, { ContextMenuEntry } from './ContextMenu';
-import gunMappings from './gunMappings';
 import GunSelector from './GunSelector';
+import Settings from './Settings';
+import gunMappings from './gunMappings';
 import CodeIcon from './icons/Code.svg';
 import SettingsIcon from './icons/Settings.svg';
 import SwitchIcon from './icons/Switch.svg';
 import UploadIcon from './icons/Upload.svg';
-import Settings from './Settings';
 
 const githubLink = 'https://github.com/xethlyx/eclipsis-skin-preview';
 
@@ -25,7 +25,7 @@ class App extends React.PureComponent {
 		contextMenu: [] as Array<ContextMenuEntry>
 	};
 
-	private buttonContextMap: {[button: string]: Array<ContextMenuEntry>} = {
+	private buttonContextMap: { [button: string]: Array<ContextMenuEntry> } = {
 		upload: [
 			{
 				name: 'Reset Skin',
@@ -77,7 +77,7 @@ class App extends React.PureComponent {
 	private oneTabPolicy = false;
 	private autoCloseGunSelector = false;
 
-	public gunMeshCache: {[gunId: string]: Object3D} = {};
+	public gunMeshCache: { [gunId: string]: Object3D } = {};
 
 	componentDidMount() {
 		if (!this.mountRef.current) throw new Error('Mount point not found');
@@ -92,13 +92,24 @@ class App extends React.PureComponent {
 			new THREE.Color(0x525252)
 		);
 		gridHelper.name = 'Grid';
-        gridHelper.position.set(0, -0.75, 0);
+		gridHelper.position.set(0, -0.75, 0);
 		this.scene.add(gridHelper);
+
+		const ambientLight = new THREE.AmbientLight(0xcccccc, 0.1)
+		this.scene.add(ambientLight);
+
+		const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.2);
+		hemisphereLight.position.set(0, 10, 0);
+		this.scene.add(hemisphereLight)
+
+		const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+		dirLight.position.set(-1, 0.75, 1);
+		this.scene.add(dirLight)
 
 		this.loadDefaultSkin();
 	}
 
-	private loadDefaultSkin = async() => {
+	private loadDefaultSkin = async () => {
 		const baseUrl = await this.toDataUrl(`texture.png`);
 		this.currentSkin = baseUrl;
 		this.loadWithTexture(this.currentSkin);
@@ -107,7 +118,7 @@ class App extends React.PureComponent {
 	constructor(props: any) {
 		super(props);
 
-        this.scene.background = new THREE.Color(0x3A3A3A);
+		this.scene.background = new THREE.Color(0x3A3A3A);
 		this.camera.position.set(3, 2, 2);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -118,21 +129,21 @@ class App extends React.PureComponent {
 		this.controls.minDistance = 1;
 		this.controls.maxDistance = 100;
 
-        window.addEventListener('resize', event => {
-            this.camera.aspect = window.innerWidth / window.innerHeight;
+		window.addEventListener('resize', event => {
+			this.camera.aspect = window.innerWidth / window.innerHeight;
 			this.camera.updateProjectionMatrix();
 
-            this.renderer.setPixelRatio(window.devicePixelRatio);
-            this.renderer.setSize(window.innerWidth, window.innerHeight);
+			this.renderer.setPixelRatio(window.devicePixelRatio);
+			this.renderer.setSize(window.innerWidth, window.innerHeight);
 		});
 
 		this.cacheGuns();
 
 		const animate = () => {
-            requestAnimationFrame(animate);
-            this.renderer.render(this.scene, this.camera);
-            this.controls.update();
-        }
+			requestAnimationFrame(animate);
+			this.renderer.render(this.scene, this.camera);
+			this.controls.update();
+		}
 		animate();
 	}
 
@@ -168,7 +179,7 @@ class App extends React.PureComponent {
 		});
 	}
 
-	private loadWithTexture = async(textureBase: string) => {
+	private loadWithTexture = async (textureBase: string) => {
 		const mesh = this.gunMeshCache[this.currentGun];
 
 		if (!mesh) {
@@ -181,15 +192,15 @@ class App extends React.PureComponent {
 		image.src = textureBase;
 
 		const texture = new THREE.Texture(image);
+		texture.colorSpace = THREE.SRGBColorSpace;
 
 		image.addEventListener('load', event => {
 			texture.needsUpdate = true;
 		});
 
-		const shader = new THREE.MeshBasicMaterial({
+		const shader = new THREE.MeshPhysicalMaterial({
 			color: 0xffffff,
-			map: texture,
-			// flatShading: true
+			map: texture
 		});
 
 		mesh.traverse(child => {
@@ -259,7 +270,7 @@ class App extends React.PureComponent {
 	private settingChanged = (settingChanged: string, newValue: any) => {
 		console.log(`Settings ${settingChanged} was changed to ${newValue}`);
 
-		switch(settingChanged) {
+		switch (settingChanged) {
 			case 'movementSmoothing':
 				this.controls.enableDamping = newValue;
 				break;
@@ -274,7 +285,10 @@ class App extends React.PureComponent {
 				break;
 			case 'showGrid':
 				const grid = this.scene.getObjectByName('Grid');
-				if (grid) grid.visible = newValue;
+				if (grid) {
+					console.log(newValue)
+					grid.visible = newValue
+				};
 				break;
 			case 'oneTabPolicy':
 				this.oneTabPolicy = newValue;
@@ -322,7 +336,7 @@ class App extends React.PureComponent {
 					<button title="Settings" onMouseLeave={this.resetContext} onMouseEnter={() => this.setContext('settings')} onClick={this.toggleSettings}><img alt="Settings" draggable={false} src={SettingsIcon}></img></button>
 					<button title="View Source" onMouseLeave={this.resetContext} onMouseEnter={() => this.setContext('source')} onClick={() => window.location.href = githubLink}><img alt="View Source" draggable={false} src={CodeIcon}></img></button>
 				</div>
-				{!this.state.gunSelectorShown || <GunSelector selectGun={this.selectGun}/>}
+				{!this.state.gunSelectorShown || <GunSelector selectGun={this.selectGun} />}
 				<Settings closeSettings={this.toggleSettings} eventBind={this.settingChanged} hidden={!this.state.settingsShown} />
 				<div className="info-indicator">
 					<p>{this.state.userUploaded ? 'User Content' : 'System Default'}</p>
