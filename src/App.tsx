@@ -41,6 +41,7 @@ class App extends React.PureComponent {
 
 		color: 'rgb(196, 40, 28)',
 		neon: false,
+		shading: true,
 		fps: 0,
 	};
 
@@ -129,15 +130,15 @@ class App extends React.PureComponent {
 		hemisphereLight.position.set(0, 10, 0);
 		this.scene.add(hemisphereLight)
 
-		const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+		const dirLight = new THREE.DirectionalLight(0xffffff, 2);
 		dirLight.position.set(0, 1, 0);
 		this.scene.add(dirLight)
 
 		this.loadDefaultSkin();
 	}
 
-	componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{ neon: boolean, color: string }>, snapshot?: any): void {
-		if (prevState.neon !== this.state.neon || prevState.color !== this.state.color) {
+	componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{ neon: boolean, color: string, shading: boolean }>, snapshot?: any): void {
+		if (prevState.neon !== this.state.neon || prevState.color !== this.state.color || prevState.shading !== this.state.shading) {
 			this.loadWithTexture(this.currentSkin);
 		}
 	}
@@ -297,12 +298,15 @@ class App extends React.PureComponent {
 		diffuse.needsUpdate = true;
 		emissive.needsUpdate = true;
 
-		const shader = new THREE.MeshStandardMaterial({
+		const shader = this.state.shading ? new THREE.MeshStandardMaterial({
 			color: 0xffffff,
 			map: diffuse,
 			emissiveMap: emissive,
 			emissive: this.state.neon ? new THREE.Color(this.state.color) : new THREE.Color('#000000'),
 			emissiveIntensity: this.state.neon ? 10 : 0,
+		}) : new THREE.MeshBasicMaterial({
+			color: 0xffffff,
+			map: diffuse,
 		});
 
 		mesh.traverse(child => {
@@ -445,6 +449,8 @@ class App extends React.PureComponent {
 					this.setState({ color });
 				}} neon={this.state.neon} setNeon={neon => {
 					this.setState({ neon });
+				}} shading={this.state.shading} setShading={shading => {
+					this.setState({ shading });
 				}} />
 				<div className="info-indicator">
 					<p>{this.state.userUploaded ? 'User Content' : 'System Default'} - {this.state.fps} FPS</p>

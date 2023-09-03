@@ -6,6 +6,8 @@ type GunColorProps = {
 	setColor: (color: string) => void;
 	neon: boolean;
 	setNeon: (value: boolean) => void;
+	shading: boolean;
+	setShading: (value: boolean) => void;
 }
 
 class GunColors extends React.PureComponent<GunColorProps> {
@@ -29,6 +31,12 @@ class GunColors extends React.PureComponent<GunColorProps> {
 			<div className="elem">
 				<label htmlFor="neon">Neon</label>
 				<div className={this.props.neon ? 'box active' : 'box'} onClick={() => this.props.setNeon(!this.props.neon)}>
+					<div className="small-box"></div>
+				</div>
+			</div>
+			<div className="elem">
+				<label htmlFor="neon">Shading</label>
+				<div className={this.props.shading ? 'box active' : 'box'} onClick={() => this.props.setShading(!this.props.shading)}>
 					<div className="small-box"></div>
 				</div>
 			</div>
