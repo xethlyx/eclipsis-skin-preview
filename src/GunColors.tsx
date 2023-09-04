@@ -28,14 +28,14 @@ class GunColors extends React.PureComponent<GunColorProps> {
 				</div>
 				<input type="color" name="color" id="color" ref={this.colorRef} />
 			</div>
-			<div className="elem">
+			{/* <div className="elem">
 				<label htmlFor="neon">Neon</label>
 				<div className={this.props.neon ? 'box active' : 'box'} onClick={() => this.props.setNeon(!this.props.neon)}>
 					<div className="small-box"></div>
 				</div>
-			</div>
+			</div> */}
 			<div className="elem">
-				<label htmlFor="neon">Shading</label>
+				<label htmlFor="shading">Shading</label>
 				<div className={this.props.shading ? 'box active' : 'box'} onClick={() => this.props.setShading(!this.props.shading)}>
 					<div className="small-box"></div>
 				</div>
